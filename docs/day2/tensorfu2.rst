@@ -29,7 +29,7 @@ Task: Create a MultiEmbedding class which can input two sets of indices, embed t
 
        def forward(self, indices1, indices2):
            # use something like
-           # z = torch.concat([x, y], dim=1)
+           # z = torch.cat([x, y], dim=1)
 
            pass
 
