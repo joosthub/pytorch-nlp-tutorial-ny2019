@@ -5,16 +5,16 @@ Exercise 1
 ----------
 
 
-Task: The code below is broken.  How can we fix it?  
-
-Hint: The input data tensor (indices) might be the wrong shape. 
+Task: The code below is not quite right for prototyping purposes.  
+Fix it so that the indices is more like an actual batched data point
+and has batch_size=30 and seq_length=10.
 
 .. code-block:: python
 
-   indices = torch.from_numpy(np.random.randint(0, 10, size=(10,)))
+   indices = torch.from_numpy(np.random.randint(0, 100, size=(10,)))
 
    emb = nn.Embedding(num_embeddings=100, embedding_dim=16)
-   emb(indices)
+   assert emb(indices).shape == (30, 10, 16)
 
 Exercise 2
 ----------
