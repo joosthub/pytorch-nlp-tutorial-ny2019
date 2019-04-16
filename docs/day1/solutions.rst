@@ -4,25 +4,79 @@ Solutions
 Problem 1
 ---------
 
+For when x is a scalar or a vector of length 1:
+
 .. code-block:: python
 
    def f(x):
-       if x.data[0] > 0:
+       if x > 0:
            return torch.sin(x)
        else:
            return torch.cos(x)
 
-   x = torch.autograd.Variable(torch.FloatTensor([1]), 
-                               requires_grad=True)
+   x = torch.tensor([1.0, 0.5], requires_grad=True)
 
    y = f(x)
    print(y)
-
    y.backward()
+   print(x.grad)
 
-   x.grad
 
-   y.grad_fn
+For when x is a vector, the conditional becomes ambiguous.  To handle this, we can use the python `all` function.  Computing the backward pass requires that the error signal be a scalar.  Since there are now multiple outputs of `f`, we can turn `y` into a scalar just by summing the outputs. 
+
+.. code-block:: python
+
+   def f(x):
+       if all(x > 0):
+           return torch.sin(x)
+       else:
+           return torch.cos(x)
+
+   x = torch.tensor([1.0, 0.5], requires_grad=True)
+
+   y = f(x)
+   print(y)
+   y.sum().backward()
+   print(x.grad)
+
+
+There is one last catch to this: we are forcing the fate of the entire vector on a strong "and" condition (all items must be above 0 or they will all be considered below 0).  To handle things in a more granular level, there are two different methods. 
+
+Method 1: use a for a loop
+
+.. code-block:: python
+
+
+   def f2(x):
+       output = []
+       for x_i in x:
+           if x_i > 0:
+               output.append(torch.sin(x_i))
+           else:
+               output.append(torch.cos(x_i))
+       return torch.stack(output)
+
+   x = torch.tensor([1.0, -1.0], requires_grad=True)
+   y = f2(x)
+   print(y)
+   y.sum().backward()
+   print(x.grad)
+
+Method 2: use a mask
+
+.. code-block:: python
+
+   def f3(x):
+       mask = (x > 0).float()
+       # alternatively, mask = torch.gt(x, 0).float()
+       return mask * torch.sin(x) + (1 - mask) * torch.cos(x)
+
+   x = torch.tensor([1.0, -1.0], requires_grad=True)
+   y = f3(x)
+   print(y)
+   y.sum().backward()
+   print(x.grad)
+
 
 Problem 2
 ---------
