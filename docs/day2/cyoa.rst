@@ -26,7 +26,7 @@ Fail Fast Prototyping
 
 Use the dataset to get a single batch and the input data from that batch.  You can use that sample input data to prototype an approach to solving the I/O problem.  
 
-..code-block:: python
+.. code-block:: python
 
    batch = next(iter(DataLoader(dataset, batch_size=4)))
    print(module_to_test(batch['x_data']).shape)
